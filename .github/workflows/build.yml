@@ -95,12 +95,13 @@ jobs:
         run: find artifacts -type f | sort
 
       - name: Publicar GitHub Release
-        uses: softprops/action-gh-release@v1
+        uses: softprops/action-gh-release@v2
         with:
           tag_name: v1.0.0
           name: "CeIA OS v1.0.0"
           draft: false
           prerelease: false
+          overwrite: true
           files: |
             artifacts/**/*.exe
             artifacts/**/*.AppImage
