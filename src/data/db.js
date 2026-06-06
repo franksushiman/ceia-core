@@ -1,7 +1,8 @@
 const sqlite3 = require("sqlite3").verbose();
+const path    = require("path");
 const { ceiaEmitter } = require("../services/ceia-emitter");
 
-const db = new sqlite3.Database("ceia.db");
+const db = new sqlite3.Database(path.join(process.cwd(), "ceia.db"));
 
 // ── SQLite: WAL mode + busy retry ─────────────────────────────────────────────
 // WAL permite leituras concorrentes sem bloquear escritas.

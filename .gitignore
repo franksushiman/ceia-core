@@ -2,6 +2,7 @@ node_modules/
 baileys_auth/
 auth_info/
 uploads/
+dist/
 *.db
 *.db-shm
 *.db-wal

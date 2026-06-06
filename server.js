@@ -82,7 +82,7 @@ db.get("PRAGMA journal_mode", (err, row) => {
 });
 
 // ─── Upload middleware ─────────────────────────────────────────────────────────
-const uploadsDir = path.join(__dirname, "uploads");
+const uploadsDir = path.join(process.cwd(), "uploads");
 if (!fs.existsSync(uploadsDir)) fs.mkdirSync(uploadsDir, { recursive: true });
 
 const uploadStorage = multer.diskStorage({
@@ -1249,7 +1249,7 @@ async function onListening() {
   // Se há sessão salva em baileys_auth/, reconecta automaticamente sem QR.
   // Se não há sessão, fica em 'desconectado' aguardando conexão manual pela UI.
   // O WhatsApp NUNCA derruba o servidor — qualquer falha é isolada aqui.
-  const baileysSessaoExiste = require('fs').existsSync(require('path').join(__dirname, 'baileys_auth', 'creds.json'));
+  const baileysSessaoExiste = require('fs').existsSync(require('path').join(process.cwd(), 'baileys_auth', 'creds.json'));
   if (baileysSessaoExiste) {
     console.log('[WA] Sessão salva encontrada. Reconectando automaticamente...');
     iniciarWhatsApp().catch(e => console.error('[WA] Falha no bootstrap (servidor continua):', e.message));
