@@ -28,6 +28,7 @@
       "electron-main.js",
       "preload.js",
       "server.js",
+      "build/icon.png",
       "app.js",
       "index.js",
       "src/**/*",
@@ -40,7 +41,7 @@
     ],
     "directories": {
       "output": "dist",
-      "buildResources": "build-resources"
+      "buildResources": "build"
     },
     "linux": {
       "target": [
