@@ -1,0 +1,123 @@
+<!-- Sub-topbar da tela Cardápio -->
+<div class="cd-topbar">
+  <span class="cd-title">Cardápio</span>
+
+  <div class="cd-search">
+    <svg class="cd-search-icon" width="14" height="14" viewBox="0 0 14 14" fill="none"
+         stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+      <circle cx="6" cy="6" r="4.5"/>
+      <line x1="9.5" y1="9.5" x2="13" y2="13"/>
+    </svg>
+    <input type="text" class="cd-search-input" placeholder="Buscar produtos, categorias...">
+    <span class="cd-kbd">⌘K</span>
+  </div>
+
+  <div class="cd-topbar-right">
+    <div class="cd-sync">
+      <span class="cd-sync-dot"></span>
+      <span class="cd-sync-label">Sincronizado</span>
+    </div>
+    <button class="cd-btn-vitrine" onclick="window.open('#')">
+      <svg width="14" height="14" viewBox="0 0 14 14" fill="none"
+           stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+        <ellipse cx="7" cy="7" rx="6" ry="4"/>
+        <circle cx="7" cy="7" r="1.5"/>
+      </svg>
+      Ver vitrine
+    </button>
+  </div>
+</div>
+
+<!-- Corpo: 3 colunas -->
+<div class="cd-body">
+
+  <!-- Coluna 1: Categorias -->
+  <div class="cd-col-cat">
+    <div class="cd-col-header">Categorias</div>
+
+    <div class="cd-cat-empty">
+      <svg width="32" height="32" viewBox="0 0 32 32" fill="none"
+           stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M4 8h5l3-4h7l3 4h5a2 2 0 012 2v16a2 2 0 01-2 2H4a2 2 0 01-2-2V10a2 2 0 012-2z"/>
+        <line x1="16" y1="14" x2="16" y2="22"/>
+        <line x1="12" y1="18" x2="20" y2="18"/>
+      </svg>
+      <span>Nenhuma categoria ainda</span>
+    </div>
+
+    <div class="cd-cat-footer">
+      <button class="cd-btn-nova-cat">
+        <svg width="12" height="12" viewBox="0 0 12 12" fill="none"
+             stroke="currentColor" stroke-width="1.5" stroke-linecap="round">
+          <line x1="6" y1="1" x2="6" y2="11"/>
+          <line x1="1" y1="6" x2="11" y2="6"/>
+        </svg>
+        Nova categoria
+      </button>
+    </div>
+  </div>
+
+  <!-- Coluna 2: Produtos -->
+  <div class="cd-col-prod">
+    <div class="cd-prod-header">
+      <div class="cd-prod-header-text">
+        <h2>Selecione uma categoria</h2>
+        <p>Crie sua primeira categoria para começar</p>
+      </div>
+      <button class="cd-btn-novo-item" disabled>
+        <svg width="12" height="12" viewBox="0 0 12 12" fill="none"
+             stroke="currentColor" stroke-width="1.5" stroke-linecap="round">
+          <line x1="6" y1="1" x2="6" y2="11"/>
+          <line x1="1" y1="6" x2="11" y2="6"/>
+        </svg>
+        Novo item
+      </button>
+    </div>
+
+    <div class="cd-prod-empty">
+      <svg width="96" height="96" viewBox="0 0 96 96" fill="none"
+           stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+        <rect x="12" y="20" width="72" height="56" rx="0"/>
+        <path d="M12 36h72"/>
+        <path d="M30 20v16"/>
+        <path d="M66 20v16"/>
+        <circle cx="48" cy="58" r="10"/>
+        <line x1="48" y1="52" x2="48" y2="64"/>
+        <line x1="42" y1="58" x2="54" y2="58"/>
+      </svg>
+      <h3>Nenhuma categoria selecionada</h3>
+      <p>Crie uma categoria à esquerda para adicionar produtos</p>
+    </div>
+  </div>
+
+  <!-- Coluna 3: Preview -->
+  <div class="cd-col-prev">
+    <div class="cd-col-header">
+      <svg width="11" height="11" viewBox="0 0 11 11" fill="none"
+           stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"
+           style="display:inline-block;vertical-align:middle;margin-right:6px">
+        <rect x="1.5" y="0.5" width="8" height="10" rx="1"/>
+        <line x1="4" y1="9" x2="7" y2="9"/>
+      </svg>
+      Preview Mobile
+    </div>
+
+    <div class="cd-prev-center">
+      <div class="cd-phone">
+        <div class="cd-phone-notch"></div>
+        <div class="cd-phone-screen">
+          <svg width="32" height="32" viewBox="0 0 32 32" fill="none"
+               stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="4" y="4" width="24" height="24"/>
+            <line x1="4" y1="12" x2="28" y2="12"/>
+            <line x1="4" y1="20" x2="28" y2="20"/>
+            <line x1="12" y1="4" x2="12" y2="28"/>
+          </svg>
+          <span>Sua vitrine aparecerá aqui</span>
+        </div>
+      </div>
+      <a href="#" class="cd-fullscreen-link">Abrir em tela cheia ↗</a>
+    </div>
+  </div>
+
+</div>

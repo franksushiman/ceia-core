@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <title>CEIA OS - Vitrine Digital</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: Arial, sans-serif; background: #111; color: #eee; }
+
+    header {
+      background: #1a1a1a;
+      padding: 15px 24px;
+      box-shadow: 0 2px 6px rgba(0,0,0,.4);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    header h1 { font-size: 18px; color: #d32f2f; }
+    nav a {
+      color: #aaa;
+      text-decoration: none;
+      margin-left: 16px;
+      font-size: 14px;
+    }
+    nav a:hover { color: #fff; }
+
+    main { max-width: 760px; margin: 32px auto; padding: 0 16px; }
+
+    .card {
+      background: #1e1e1e;
+      border-radius: 10px;
+      padding: 24px;
+      margin-bottom: 24px;
+    }
+    .card h2 { font-size: 16px; color: #ccc; margin-bottom: 18px; border-bottom: 1px solid #333; padding-bottom: 10px; }
+
+    /* Status badge */
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 6px 14px;
+      border-radius: 20px;
+      font-size: 14px;
+      font-weight: bold;
+    }
+    .badge .dot { width: 10px; height: 10px; border-radius: 50%; }
+    .badge.online  { background: #1b3a1b; color: #4caf50; }
+    .badge.online  .dot { background: #4caf50; }
+    .badge.syncing { background: #3a3510; color: #ffc107; }
+    .badge.syncing .dot { background: #ffc107; animation: pulse 1s infinite; }
+    .badge.offline { background: #3a1010; color: #f44336; }
+    .badge.offline .dot { background: #f44336; }
+    @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:.3} }
+
+    /* Form */
+    label { display: block; font-size: 13px; color: #999; margin-bottom: 6px; margin-top: 16px; }
+    input[type=text], input[type=password] {
+      width: 100%;
+      padding: 10px 14px;
+      background: #2a2a2a;
+      border: 1px solid #444;
+      border-radius: 6px;
+      color: #eee;
+      font-size: 14px;
+    }
+    input:focus { outline: none; border-color: #d32f2f; }
+
+    .row { display: flex; gap: 10px; align-items: center; margin-top: 10px; }
+
+    button {
+      padding: 9px 18px;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 14px;
+      font-weight: bold;
+      transition: opacity .15s;
+    }
+    button:hover { opacity: .85; }
+    .btn-primary { background: #d32f2f; color: #fff; }
+    .btn-secondary { background: #333; color: #eee; }
+    .btn-sync { background: #1565c0; color: #fff; }
+
+    /* Info grid */
+    .info-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 14px; margin-top: 4px; }
+    .info-box { background: #252525; border-radius: 8px; padding: 14px; text-align: center; }
+    .info-box .num { font-size: 28px; font-weight: bold; color: #d32f2f; }
+    .info-box .label { font-size: 12px; color: #888; margin-top: 4px; }
+
+    .link-loja { color: #64b5f6; font-size: 14px; word-break: break-all; }
+    .link-loja:hover { text-decoration: underline; }
+    .msg { font-size: 13px; color: #aaa; margin-top: 8px; min-height: 20px; }
+    .msg.ok  { color: #4caf50; }
+    .msg.err { color: #f44336; }
+
+    #ts-sync { font-size: 12px; color: #666; margin-top: 6px; }
+  </style>
+</head>
+<body>
+
+<header>
+  <h1>🍣 CEIA OS</h1>
+  <nav>
+    <a href="/kds.html">KDS</a>
+    <a href="/mapa.html">Mapa</a>
+    <a href="/vitrine.html">Vitrine</a>
+    <a href="/onboarding.html">Config</a>
+  </nav>
+</header>
+
+<main>
+
+  <!-- Status -->
+  <div class="card">
+    <h2>Status da Vitrine Digital</h2>
+    <div id="badge-status" class="badge offline">
+      <span class="dot"></span>
+      <span id="badge-label">Verificando...</span>
+    </div>
+    <div id="ts-sync"></div>
+  </div>
+
+  <!-- Token -->
+  <div class="card">
+    <h2>Conexão com o WP Central</h2>
+    <label>Node Token</label>
+    <input type="password" id="input-token" placeholder="Cole aqui o token gerado no painel Ceia">
+    <div class="row">
+      <button class="btn-primary" onclick="salvarToken()">Salvar e conectar</button>
+      <button class="btn-secondary" onclick="testarConexao()">Testar conexão</button>
+    </div>
+    <div id="msg-token" class="msg"></div>
+    <div id="link-loja-wrap" style="margin-top:12px;display:none">
+      <a id="link-loja" class="link-loja" target="_blank" href="#"></a>
+    </div>
+  </div>
+
+  <!-- Sync manual -->
+  <div class="card">
+    <h2>Sincronização do Cardápio</h2>
+    <button class="btn-sync" onclick="syncAgora()">&#x21bb; Sincronizar cardápio agora</button>
+    <div id="msg-sync" class="msg"></div>
+
+    <div class="info-grid" style="margin-top:20px">
+      <div class="info-box">
+        <div class="num" id="num-cat">—</div>
+        <div class="label">Categorias</div>
+      </div>
+      <div class="info-box">
+        <div class="num" id="num-prod">—</div>
+        <div class="label">Produtos</div>
+      </div>
+      <div class="info-box">
+        <div class="num" id="num-bairros">—</div>
+        <div class="label">Bairros</div>
+      </div>
+    </div>
+  </div>
+
+</main>
+
+<script>
+  async function carregarStatus() {
+    const res = await fetch("/api/vitrine/status").catch(() => null);
+    if (!res) return;
+    const data = await res.json();
+
+    const badge = document.getElementById("badge-status");
+    const label = document.getElementById("badge-label");
+    const tsEl  = document.getElementById("ts-sync");
+
+    badge.className = "badge";
+
+    if (data.emAndamento) {
+      badge.classList.add("syncing");
+      label.textContent = "Sincronizando...";
+    } else if (!data.tokenConfigurado) {
+      badge.classList.add("offline");
+      label.textContent = "Offline — token não configurado";
+    } else if (data.ultimoSync) {
+      const diffMin = (Date.now() - new Date(data.ultimoSync.ts)) / 60000;
+      if (diffMin < 2) {
+        badge.classList.add("online");
+        label.textContent = "Online";
+      } else {
+        badge.classList.add("syncing");
+        label.textContent = "Aguardando sync";
+      }
+      tsEl.textContent = `Última sincronização: ${new Date(data.ultimoSync.ts).toLocaleString("pt-BR")}`;
+
+      document.getElementById("num-cat").textContent = data.ultimoSync.categorias ?? "—";
+      document.getElementById("num-prod").textContent = data.ultimoSync.produtos ?? "—";
+      document.getElementById("num-bairros").textContent = data.ultimoSync.bairros ?? "—";
+    } else {
+      badge.classList.add("offline");
+      label.textContent = "Offline";
+    }
+  }
+
+  async function salvarToken() {
+    const token = document.getElementById("input-token").value.trim();
+    if (!token) return setMsg("msg-token", "Cole o token antes de salvar", "err");
+    const res = await fetch("/api/vitrine/token", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ token }),
+    });
+    const data = await res.json();
+    setMsg("msg-token", data.ok ? "Token salvo! Sincronizando..." : data.error, data.ok ? "ok" : "err");
+    if (data.ok) carregarStatus();
+  }
+
+  async function testarConexao() {
+    setMsg("msg-token", "Testando...", "");
+    const res = await fetch("/api/vitrine/testar").catch(() => null);
+    if (!res) return setMsg("msg-token", "Sem resposta do servidor", "err");
+    const data = await res.json();
+    if (data.ok) {
+      setMsg("msg-token", `Conectado como "${data.loja}"`, "ok");
+      const wrap = document.getElementById("link-loja-wrap");
+      const link = document.getElementById("link-loja");
+      link.href = data.url;
+      link.textContent = data.url;
+      wrap.style.display = "block";
+    } else {
+      setMsg("msg-token", data.error || "Falha na conexão", "err");
+    }
+  }
+
+  async function syncAgora() {
+    setMsg("msg-sync", "Enviando cardápio...", "");
+    const res = await fetch("/api/vitrine/sync", { method: "POST" }).catch(() => null);
+    if (!res) return setMsg("msg-sync", "Erro de rede", "err");
+    const data = await res.json();
+    if (data.ok) {
+      setMsg("msg-sync", `Sincronizado! ${data.stats.produtos} produtos enviados.`, "ok");
+      carregarStatus();
+    } else {
+      setMsg("msg-sync", data.error || "Falha no sync", "err");
+    }
+  }
+
+  function setMsg(id, text, type) {
+    const el = document.getElementById(id);
+    el.textContent = text;
+    el.className = "msg" + (type ? ` ${type}` : "");
+  }
+
+  carregarStatus();
+  setInterval(carregarStatus, 15_000);
+</script>
+</body>
+</html>

@@ -1,0 +1,8 @@
+node_modules/
+baileys_auth/
+auth_info/
+uploads/
+*.db
+*.db-shm
+*.db-wal
+.env

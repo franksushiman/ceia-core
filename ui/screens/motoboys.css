@@ -1,0 +1,236 @@
+/* ── Motoboys — Fase 9 ───────────────────────────────────────────────────── */
+
+/* ── Topbar ──────────────────────────────────────────────────────────────── */
+.mb-root { display: flex; flex-direction: column; gap: 0; height: 100%; }
+
+.mb-bar {
+  display: flex; align-items: center; justify-content: space-between;
+  padding-bottom: 20px; flex-shrink: 0; gap: 12px; flex-wrap: wrap;
+}
+.mb-bar-left  { display: flex; align-items: center; gap: 10px; }
+.mb-bar-right { display: flex; align-items: center; gap: 8px; }
+
+.mb-title {
+  font-size: 11px; font-weight: 600; text-transform: uppercase;
+  letter-spacing: 0.1em; color: var(--text-muted);
+}
+.mb-count {
+  font-size: 11px; color: var(--text-dim); font-weight: 400;
+  letter-spacing: 0; text-transform: none;
+}
+
+.mb-search {
+  height: 32px; padding: 0 10px; font-size: 12px;
+  background: var(--surface); border: 1px solid var(--border);
+  color: var(--text); border-radius: 3px; outline: none;
+  width: 180px; transition: border-color 0.15s;
+}
+.mb-search:focus { border-color: var(--border-hover); }
+.mb-search::placeholder { color: var(--text-dim); }
+
+/* ── Filtros rápidos ─────────────────────────────────────────────────────── */
+.mb-filters {
+  display: flex; gap: 4px; padding-bottom: 20px; flex-shrink: 0;
+}
+.mb-filter-btn {
+  height: 28px; padding: 0 12px; font-size: 11px; font-weight: 500;
+  background: none; border: 1px solid var(--border); color: var(--text-muted);
+  border-radius: 14px; cursor: pointer; transition: all 0.15s;
+  letter-spacing: -0.01em;
+}
+.mb-filter-btn:hover { border-color: var(--border-hover); color: var(--text); }
+.mb-filter-btn.active {
+  background: rgba(255,255,255,.08); border-color: var(--text); color: var(--text);
+}
+
+/* ── Grid ────────────────────────────────────────────────────────────────── */
+.mb-body {
+  flex: 1; overflow-y: auto; min-height: 0;
+}
+.mb-body::-webkit-scrollbar { width: 4px; }
+.mb-body::-webkit-scrollbar-thumb { background: var(--border); }
+
+.mb-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 12px;
+  align-content: start;
+}
+
+.mb-empty {
+  grid-column: 1 / -1;
+  padding: 48px 0; text-align: center;
+  font-size: 13px; color: var(--text-dim); letter-spacing: -0.01em;
+}
+
+/* ── Fleet card ──────────────────────────────────────────────────────────── */
+.fleet-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 14px 14px 12px;
+  display: flex; flex-direction: column; gap: 8px;
+  transition: box-shadow 0.15s;
+  position: relative;
+}
+.fleet-card:hover { box-shadow: 0 0 0 1px var(--border-hover); }
+
+/* Destaques de borda */
+.fleet-card.em-rota       { border-left: 3px solid #3b82f6; }
+.fleet-card.pendente      { border-left: 3px solid #ef4444; }
+.fleet-card.em-rota.pendente { border-left: 3px solid #8b5cf6; }
+.fleet-card.sos-active    { border-left: 3px solid #ef4444; box-shadow: 0 0 0 1px rgba(239,68,68,.35); }
+
+/* SOS pulse button */
+@keyframes sos-pulse {
+  0%,100% { box-shadow: 0 0 0 0 rgba(239,68,68,.6); }
+  50%      { box-shadow: 0 0 0 5px rgba(239,68,68,0); }
+}
+.btn-fleet.sos-pulse { animation: sos-pulse 1.2s ease infinite; }
+
+/* ── Card header ─────────────────────────────────────────────────────────── */
+.fleet-card-head {
+  display: flex; align-items: flex-start; justify-content: space-between; gap: 8px;
+}
+.fleet-nome {
+  font-size: 14px; font-weight: 600; color: var(--text);
+  letter-spacing: -0.02em; line-height: 1.3;
+  overflow: hidden; text-overflow: ellipsis; white-space: nowrap; flex: 1; min-width: 0;
+}
+
+/* ── Status badge ────────────────────────────────────────────────────────── */
+.fleet-status {
+  display: inline-flex; align-items: center; gap: 5px;
+  font-size: 10px; font-weight: 600; text-transform: uppercase;
+  letter-spacing: 0.08em; border-radius: 10px; padding: 2px 8px;
+  flex-shrink: 0; white-space: nowrap;
+}
+.fleet-status::before {
+  content: ''; width: 5px; height: 5px; border-radius: 50%; flex-shrink: 0;
+}
+.fleet-status.ONLINE    { background: rgba(74,222,128,.12); color: #4ade80; }
+.fleet-status.ONLINE::before { background: #4ade80; box-shadow: 0 0 5px rgba(74,222,128,.6); }
+.fleet-status.EM_ROTA,
+.fleet-status.EM_ENTREGA{ background: rgba(59,130,246,.12); color: #60a5fa; }
+.fleet-status.EM_ROTA::before,
+.fleet-status.EM_ENTREGA::before { background: #60a5fa; }
+.fleet-status.OFFLINE   { background: rgba(107,107,107,.15); color: var(--text-dim); }
+.fleet-status.OFFLINE::before { background: var(--text-dim); }
+
+/* ── Tipo / vínculo ──────────────────────────────────────────────────────── */
+.fleet-meta {
+  font-size: 11px; color: var(--text-muted); letter-spacing: -0.01em;
+  display: flex; align-items: center; gap: 6px; flex-wrap: wrap;
+}
+.fleet-vinculo {
+  font-size: 10px; font-weight: 500; text-transform: uppercase; letter-spacing: 0.06em;
+  padding: 1px 6px; border-radius: 3px; background: rgba(255,255,255,.06);
+  color: var(--text-muted);
+}
+.fleet-nuvem-badge {
+  font-size: 10px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.08em;
+  padding: 2px 8px; border-radius: 10px;
+  background: rgba(139,92,246,.15); color: #a78bfa; border: 1px solid rgba(139,92,246,.25);
+}
+.fleet-origem {
+  font-size: 11px; color: var(--text-dim); letter-spacing: -0.01em;
+}
+
+/* ── Pendente badge ──────────────────────────────────────────────────────── */
+.fleet-pendente-badge {
+  font-size: 10px; font-weight: 600; padding: 1px 7px; border-radius: 10px;
+  background: rgba(239,68,68,.12); color: #f87171;
+}
+
+/* ── Última atualização ──────────────────────────────────────────────────── */
+.fleet-ts {
+  font-size: 10px; color: var(--text-dim); letter-spacing: -0.01em;
+}
+
+/* ── Botões de ação ──────────────────────────────────────────────────────── */
+.fleet-actions {
+  display: flex; gap: 6px; margin-top: 4px; flex-wrap: wrap;
+}
+.btn-fleet {
+  height: 30px; padding: 0 10px; font-size: 11px; font-weight: 500;
+  background: rgba(255,255,255,.05); border: 1px solid var(--border);
+  color: var(--text-muted); border-radius: 3px; cursor: pointer;
+  display: inline-flex; align-items: center; gap: 5px;
+  transition: all 0.15s; flex-shrink: 0;
+}
+.btn-fleet:hover { background: rgba(255,255,255,.09); color: var(--text); border-color: var(--border-hover); }
+.btn-fleet svg   { flex-shrink: 0; }
+
+.btn-fleet.danger:hover { color: #ef4444; border-color: #ef4444; background: rgba(239,68,68,.06); }
+.btn-fleet.success:hover{ color: #4ade80; border-color: #4ade80; background: rgba(74,222,128,.06); }
+
+/* ── Drawers (reusa padrão CEIA OS) ─────────────────────────────────────── */
+/* Esses estilos são globais em despacho.css; duplicamos apenas o necessário */
+.mb-drawer-backdrop {
+  position: fixed; inset: 0; background: rgba(0,0,0,.6); z-index: 1000;
+}
+.mb-drawer {
+  position: fixed; top: 0; right: 0; bottom: 0;
+  width: 400px; max-width: 95vw;
+  background: var(--bg); border-left: 1px solid var(--border);
+  z-index: 1001; display: flex; flex-direction: column;
+  overflow: hidden;
+}
+.mb-drawer-header {
+  padding: 20px 24px 16px; border-bottom: 1px solid var(--border);
+  display: flex; align-items: center; justify-content: space-between;
+  flex-shrink: 0;
+}
+.mb-drawer-title {
+  font-size: 14px; font-weight: 600; color: var(--text); letter-spacing: -0.02em;
+}
+.mb-drawer-body {
+  flex: 1; overflow-y: auto; padding: 20px 24px; display: flex; flex-direction: column; gap: 14px;
+}
+.mb-drawer-body::-webkit-scrollbar { width: 4px; }
+.mb-drawer-body::-webkit-scrollbar-thumb { background: var(--border); }
+.mb-drawer-footer {
+  padding: 14px 24px; border-top: 1px solid var(--border);
+  display: flex; justify-content: flex-end; gap: 8px; flex-shrink: 0;
+}
+
+/* Form */
+.mb-form-label {
+  font-size: 10px; font-weight: 600; text-transform: uppercase;
+  letter-spacing: 0.1em; color: var(--text-dim); margin-bottom: 5px; display: block;
+}
+.mb-form-input, .mb-form-select {
+  width: 100%; height: 36px; padding: 0 10px; font-size: 13px;
+  background: var(--surface); border: 1px solid var(--border); color: var(--text);
+  border-radius: 3px; outline: none; transition: border-color 0.15s;
+  font-family: 'Inter', sans-serif;
+}
+.mb-form-input:focus, .mb-form-select:focus { border-color: var(--border-hover); }
+.mb-form-select option { background: var(--surface); }
+
+/* Extrato */
+.mb-extrato-row {
+  display: flex; justify-content: space-between; align-items: center;
+  padding: 8px 0; border-bottom: 1px solid var(--border);
+  font-size: 12px; color: var(--text-muted); gap: 8px;
+}
+.mb-extrato-row:last-child { border-bottom: none; }
+.mb-extrato-row .val { color: var(--teal); font-family: monospace; font-size: 12px; white-space: nowrap; }
+.mb-extrato-total {
+  display: flex; justify-content: space-between; align-items: center;
+  padding: 10px 0 0; margin-top: 4px; border-top: 1px solid var(--border);
+  font-size: 14px; font-weight: 600; color: var(--text);
+}
+.mb-extrato-total .val { color: #4ade80; font-family: monospace; }
+
+.mb-pix-row {
+  display: flex; align-items: center; gap: 8px;
+  padding: 8px 10px; background: var(--surface); border: 1px solid var(--border);
+  border-radius: 3px;
+}
+.mb-pix-val { flex: 1; font-size: 13px; color: var(--text); letter-spacing: -0.01em; word-break: break-all; }
+.mb-pix-copy {
+  background: none; border: none; cursor: pointer; color: var(--text-dim);
+  padding: 2px 4px; font-size: 11px; transition: color 0.15s;
+}
+.mb-pix-copy:hover { color: var(--teal); }

@@ -1,0 +1,309 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <title>CEIA OS - Configurações</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: Arial, sans-serif; background: #111; color: #eee; }
+
+    header {
+      background: #1a1a1a;
+      padding: 15px 24px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      box-shadow: 0 2px 6px rgba(0,0,0,.4);
+    }
+    header h1 { font-size: 18px; color: #d32f2f; }
+    nav a { color: #aaa; text-decoration: none; margin-left: 16px; font-size: 14px; }
+    nav a:hover { color: #fff; }
+
+    main { max-width: 640px; margin: 32px auto; padding: 0 16px; }
+
+    /* Steps */
+    .steps { display: flex; gap: 0; margin-bottom: 28px; }
+    .step {
+      flex: 1;
+      text-align: center;
+      padding: 8px 4px;
+      font-size: 12px;
+      color: #555;
+      border-bottom: 3px solid #333;
+      cursor: default;
+    }
+    .step.active { color: #eee; border-color: #d32f2f; }
+    .step.done   { color: #4caf50; border-color: #4caf50; }
+
+    /* Cards */
+    .card {
+      background: #1e1e1e;
+      border-radius: 10px;
+      padding: 28px;
+      display: none;
+    }
+    .card.visible { display: block; }
+    .card h2 { font-size: 17px; margin-bottom: 8px; }
+    .card p  { color: #999; font-size: 14px; margin-bottom: 20px; line-height: 1.6; }
+
+    label { display: block; font-size: 13px; color: #999; margin-bottom: 6px; margin-top: 16px; }
+    input[type=text], input[type=password] {
+      width: 100%;
+      padding: 10px 14px;
+      background: #2a2a2a;
+      border: 1px solid #444;
+      border-radius: 6px;
+      color: #eee;
+      font-size: 14px;
+    }
+    input:focus { outline: none; border-color: #d32f2f; }
+
+    .btn-row { display: flex; gap: 10px; margin-top: 20px; flex-wrap: wrap; }
+    button {
+      padding: 10px 20px;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 14px;
+      font-weight: bold;
+    }
+    .btn-primary  { background: #d32f2f; color: #fff; }
+    .btn-outline  { background: transparent; color: #aaa; border: 1px solid #444; }
+    .btn-external { background: #1565c0; color: #fff; }
+
+    .msg { margin-top: 12px; font-size: 13px; min-height: 20px; }
+    .msg.ok  { color: #4caf50; }
+    .msg.err { color: #f44336; }
+
+    .success-box {
+      background: #1b3a1b;
+      border-radius: 8px;
+      padding: 16px;
+      margin-top: 12px;
+      color: #81c784;
+      font-size: 14px;
+      line-height: 1.7;
+    }
+    .success-box a { color: #64b5f6; }
+
+    .finish-banner {
+      text-align: center;
+      padding: 32px;
+    }
+    .finish-banner .check { font-size: 56px; }
+    .finish-banner h2 { margin: 12px 0 8px; }
+    .finish-banner p { color: #888; }
+  </style>
+</head>
+<body>
+
+<header>
+  <h1>🍣 CEIA OS</h1>
+  <nav>
+    <a href="/kds.html">KDS</a>
+    <a href="/mapa.html">Mapa</a>
+    <a href="/vitrine.html">Vitrine</a>
+    <a href="/onboarding.html">Config</a>
+  </nav>
+</header>
+
+<main>
+
+  <div class="steps">
+    <div class="step active" id="s1">1. Vitrine Ceia</div>
+    <div class="step"        id="s2">2. Asaas</div>
+    <div class="step"        id="s3">3. OpenAI</div>
+    <div class="step"        id="s4">✓ Pronto</div>
+  </div>
+
+  <!-- ── Passo 1: Vitrine Ceia ── -->
+  <div class="card visible" id="card-1">
+    <h2>Vitrine Digital Ceia</h2>
+    <p>Seu cardápio ficará disponível em <strong>{slug}.ceia.ia.br</strong>. Para ativar, você precisa de um Node Token gerado no painel Ceia.</p>
+
+    <div class="btn-row">
+      <button class="btn-primary" onclick="irPara(1,'sim')">Já tenho cadastro</button>
+      <button class="btn-external" onclick="abrirLink('https://ceia.ia.br/cadastro')">Criar conta agora</button>
+    </div>
+
+    <!-- sub-passo: colar token -->
+    <div id="token-form" style="display:none; margin-top:20px;">
+      <label>Node Token</label>
+      <input type="password" id="input-token" placeholder="Cole o token do painel Ceia">
+      <div class="btn-row">
+        <button class="btn-primary" onclick="salvarEValidarToken()">Validar e avançar</button>
+      </div>
+      <div id="msg-token" class="msg"></div>
+      <div id="info-loja" class="success-box" style="display:none"></div>
+    </div>
+  </div>
+
+  <!-- ── Passo 2: Asaas ── -->
+  <div class="card" id="card-2">
+    <h2>Pagamentos (Asaas)</h2>
+    <p>O Asaas é usado para gerar cobranças PIX e cartão automaticamente quando o cliente pedir pelo cardápio digital.</p>
+
+    <div class="btn-row">
+      <button class="btn-primary" onclick="irPara(2,'sim')">Já tenho conta Asaas</button>
+      <button class="btn-external" onclick="abrirLink('https://www.asaas.com/')">Criar conta Asaas</button>
+      <button class="btn-outline"  onclick="irPara(2,'pular')">Pular por enquanto</button>
+    </div>
+
+    <div id="asaas-form" style="display:none; margin-top:20px;">
+      <label>Chave de API do Asaas</label>
+      <input type="password" id="input-asaas" placeholder="$aas_prod_...">
+      <div class="btn-row">
+        <button class="btn-primary" onclick="salvarAsaas()">Salvar e avançar</button>
+      </div>
+      <div id="msg-asaas" class="msg"></div>
+    </div>
+  </div>
+
+  <!-- ── Passo 3: OpenAI ── -->
+  <div class="card" id="card-3">
+    <h2>Atendente IA (OpenAI)</h2>
+    <p>O OpenAI é usado para reconhecer pedidos enviados pelo WhatsApp e responder automaticamente ao cliente. Você precisa de uma chave em <strong>platform.openai.com</strong>.</p>
+
+    <div class="btn-row">
+      <button class="btn-primary" onclick="irPara(3,'sim')">Já tenho chave OpenAI</button>
+      <button class="btn-external" onclick="abrirLink('https://platform.openai.com/api-keys')">Gerar chave agora</button>
+      <button class="btn-outline"  onclick="irPara(3,'pular')">Pular por enquanto</button>
+    </div>
+
+    <div id="openai-form" style="display:none; margin-top:20px;">
+      <label>Chave de API do OpenAI</label>
+      <input type="password" id="input-openai" placeholder="sk-proj-...">
+      <div class="btn-row">
+        <button class="btn-primary" onclick="salvarOpenAI()">Salvar e finalizar</button>
+      </div>
+      <div id="msg-openai" class="msg"></div>
+    </div>
+  </div>
+
+  <!-- ── Passo 4: Concluído ── -->
+  <div class="card" id="card-4">
+    <div class="finish-banner">
+      <div class="check">✅</div>
+      <h2>Configuração concluída!</h2>
+      <p>O CEIA OS está pronto para receber pedidos pelo cardápio digital.</p>
+      <div class="btn-row" style="justify-content:center; margin-top:20px;">
+        <button class="btn-primary" onclick="location.href='/vitrine.html'">Ver Vitrine Digital</button>
+        <button class="btn-outline"  onclick="location.href='/kds.html'">Abrir KDS</button>
+      </div>
+    </div>
+  </div>
+
+</main>
+
+<script>
+  let passo = 1;
+
+  function setStep(n) {
+    passo = n;
+    document.querySelectorAll(".card").forEach(c => c.classList.remove("visible"));
+    document.getElementById(`card-${n}`).classList.add("visible");
+    for (let i = 1; i <= 4; i++) {
+      const s = document.getElementById(`s${i}`);
+      s.className = "step";
+      if (i < n) s.classList.add("done");
+      else if (i === n) s.classList.add("active");
+    }
+  }
+
+  function irPara(etapa, opcao) {
+    if (etapa === 1 && opcao === "sim") {
+      document.getElementById("token-form").style.display = "block";
+      return;
+    }
+    if (etapa === 2 && opcao === "sim") {
+      document.getElementById("asaas-form").style.display = "block";
+      return;
+    }
+    if (etapa === 3 && opcao === "sim") {
+      document.getElementById("openai-form").style.display = "block";
+      return;
+    }
+    // "pular"
+    if (etapa === 2) setStep(3);
+    if (etapa === 3) finalizarOnboarding();
+  }
+
+  async function salvarEValidarToken() {
+    const token = document.getElementById("input-token").value.trim();
+    if (!token) return msg("msg-token", "Cole o token antes de continuar", "err");
+
+    msg("msg-token", "Validando...");
+    const res = await post("/api/onboarding/token", { token });
+
+    if (res.ok) {
+      document.getElementById("info-loja").style.display = "block";
+      document.getElementById("info-loja").innerHTML =
+        `✅ Conectado como <strong>${res.loja}</strong><br>` +
+        `Sua vitrine: <a href="${res.url}" target="_blank">${res.url}</a>`;
+      msg("msg-token", "", "");
+      setTimeout(() => setStep(2), 1800);
+    } else {
+      msg("msg-token", res.error || "Token inválido", "err");
+    }
+  }
+
+  async function salvarAsaas() {
+    const key = document.getElementById("input-asaas").value.trim();
+    if (!key) return msg("msg-asaas", "Cole a chave antes de salvar", "err");
+    const res = await post("/api/onboarding/asaas", { key });
+    if (res.ok) {
+      msg("msg-asaas", "Chave salva!", "ok");
+      setTimeout(() => setStep(3), 1200);
+    } else {
+      msg("msg-asaas", res.error || "Erro ao salvar", "err");
+    }
+  }
+
+  async function salvarOpenAI() {
+    const key = document.getElementById("input-openai").value.trim();
+    if (!key) return msg("msg-openai", "Cole a chave antes de salvar", "err");
+    const res = await post("/api/onboarding/openai", { key });
+    if (res.ok) {
+      msg("msg-openai", "Chave salva!", "ok");
+      setTimeout(finalizarOnboarding, 1200);
+    } else {
+      msg("msg-openai", res.error || "Erro ao salvar", "err");
+    }
+  }
+
+  async function finalizarOnboarding() {
+    await post("/api/onboarding/finalizar", {});
+    setStep(4);
+  }
+
+  function abrirLink(url) {
+    window.open(url, "_blank");
+  }
+
+  function msg(id, text, type = "") {
+    const el = document.getElementById(id);
+    el.textContent = text;
+    el.className = "msg" + (type ? ` ${type}` : "");
+  }
+
+  async function post(path, body) {
+    try {
+      const res = await fetch(path, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(body),
+      });
+      return res.json();
+    } catch { return { ok: false, error: "Sem resposta do servidor" }; }
+  }
+
+  // Se vitrine_configurada, mostra configuração (não onboarding)
+  fetch("/api/onboarding/status").then(r => r.json()).then(data => {
+    if (data.configurado) {
+      // Pula direto para o fim
+      setStep(4);
+    }
+  }).catch(() => {});
+</script>
+</body>
+</html>

@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="pt-PT">
+<head>
+  <meta charset="UTF-8">
+  <title>CEIA OS - Mapa Operacional</title>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet.draw/1.0.4/leaflet.draw.css"/>
+  
+  <style>
+    body { font-family: Arial, sans-serif; margin: 0; padding: 0; background: #f8f9fa; color: #333; }
+    header { background: #ffffff; padding: 15px 20px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); display: flex; justify-content: space-between; align-items: center; }
+    h1 { margin: 0; font-size: 20px; color: #d32f2f; }
+    #map { height: calc(100vh - 60px); width: 100%; z-index: 1; }
+  </style>
+</head>
+<body>
+
+  <header>
+    <h1>🍣 CEIA OS - Mapa e Zonas de Entrega</h1>
+    <span>Módulo Operacional</span>
+  </header>
+
+  <div id="map"></div>
+
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet.draw/1.0.4/leaflet.draw.js"></script>
+
+  <script>
+    async function initMap() {
+      // 1. Vai buscar a morada real da loja à base de dados
+      const resSettings = await fetch('/settings');
+      const settings = await resSettings.json();
+
+      // 2. Arranca o mapa focado na coordenada da loja
+      const map = L.map('map').setView([settings.latitude, settings.longitude], 15);
+
+      L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution: '© OpenStreetMap contributors'
+      }).addTo(map);
+
+      // 3. Coloca um marcador fixo a identificar o restaurante
+      L.marker([settings.latitude, settings.longitude]).addTo(map)
+        .bindPopup(`<b>Ponto Zero (A sua loja)</b><br>${settings.address}`).openPopup();
+
+      // 4. Carrega as ferramentas de desenho
+      const drawnItems = new L.FeatureGroup();
+      map.addLayer(drawnItems);
+
+      const drawControl = new L.Control.Draw({
+        edit: { featureGroup: drawnItems },
+        draw: { marker: false, circlemarker: false, polyline: false, rectangle: false, circle: false, polygon: { allowIntersection: false, drawError: { color: '#e1e100', message: 'Erro: não cruzar linhas!' }, shapeOptions: { color: '#d32f2f' } } }
+      });
+      map.addControl(drawControl);
+
+      // 5. Carrega as zonas já guardadas
+      const resZones = await fetch('/zones');
+      const zones = await resZones.json();
+      
+      zones.forEach(zone => {
+        const geojson = JSON.parse(zone.coordinates_json);
+        const layer = L.geoJSON(geojson, { style: { color: '#2196F3', weight: 3 } }).addTo(drawnItems);
+        layer.bindPopup(`<b>${zone.name}</b><br>Taxa: R$ ${zone.shipping_fee}<br>Mínimo: R$ ${zone.minimum_order}`);
+      });
+
+      // 6. Ao terminar de desenhar uma zona nova
+      map.on(L.Draw.Event.CREATED, async function (event) {
+        const layer = event.layer;
+        
+        const name = prompt("Nome desta Zona (ex: Centro):");
+        if (!name) return;
+        const fee = prompt("Taxa de Entrega (ex: 5.50):");
+        const minOrder = prompt("Pedido Mínimo (ex: 30.00):");
+        const prepTime = prompt("Tempo Mínimo de Preparo (minutos, ex: 40):");
+
+        const geojson = layer.toGeoJSON();
+
+        await fetch('/zones', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            name: name, coordinates_json: JSON.stringify(geojson), shipping_fee: parseFloat(fee), minimum_order: parseFloat(minOrder), prep_time: parseInt(prepTime)
+          })
+        });
+
+        drawnItems.addLayer(layer);
+        layer.bindPopup(`<b>${name}</b><br>Taxa: R$ ${fee}<br>Mínimo: R$ ${minOrder}`);
+      });
+    }
+
+    initMap();
+  </script>
+</body>
+</html>
