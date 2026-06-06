@@ -1,11 +1,10 @@
 const express = require("express");
 const sqlite3 = require("sqlite3").verbose();
-const path    = require("path");
 const P = require("pino");
 const qrcode = require("qrcode-terminal");
 
 const app = express();
-const db = new sqlite3.Database(path.join(process.cwd(), "ceia.db"));
+const db = new sqlite3.Database("ceia.db");
 
 // ── SQLite: WAL mode + busy retry ─────────────────────────────────────────────
 db.run("PRAGMA journal_mode=WAL", (err) => {

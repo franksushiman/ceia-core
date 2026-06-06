@@ -26,7 +26,7 @@ const sessions = {};
 
 async function startBot() {
   await loadBaileys();
-  const { state, saveCreds } = await useMultiFileAuthState(require("path").join(process.cwd(), "auth_info"));
+  const { state, saveCreds } = await useMultiFileAuthState("auth_info");
   const { version } = await fetchLatestBaileysVersion();
 
   const sock = makeWASocket({
