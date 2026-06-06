@@ -10,6 +10,11 @@ const EXPRESS_PORT = process.env.PORT || 3000;
 let mainWindow;
 
 function startExpressServer() {
+  // No app empacotado, direciona todos os dados graváveis para userData
+  // (fora do asar read-only). Em dev (npm start) não seta nada → caminhos locais.
+  if (app.isPackaged) {
+    process.env.CEIA_DATA_DIR = app.getPath('userData');
+  }
   const { app: expressApp, onListening } = require('./server.js');
   return new Promise((resolve, reject) => {
     const server = expressApp.listen(EXPRESS_PORT, '127.0.0.1', async () => {

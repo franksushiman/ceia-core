@@ -10,8 +10,9 @@ const fs      = require("fs");
 const path    = require("path");
 const sqlite3 = require("sqlite3").verbose();
 const { ceiaEmitter } = require("./ceia-emitter");
+const { getDataDir } = require("../lib/paths");
 
-const db = new sqlite3.Database("ceia.db");
+const db = new sqlite3.Database(path.join(getDataDir(), "ceia.db"));
 
 // ── SQLite: WAL mode + busy retry ─────────────────────────────────────────────
 db.run("PRAGMA journal_mode=WAL", (err) => {
@@ -23,7 +24,7 @@ db.get("PRAGMA journal_mode", (err, row) => {
   else console.log(`[VITRINE-DB] journal_mode ativo: ${row.journal_mode}`);
 });
 
-const UPLOADS_DIR      = path.join(__dirname, "../../uploads");
+const UPLOADS_DIR      = path.join(getDataDir(), "uploads");
 const UPLOAD_TIMEOUT_MS = 30_000;
 
 const CEIA_API_URL =

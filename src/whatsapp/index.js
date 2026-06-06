@@ -15,9 +15,10 @@
 
 const fs   = require('fs');
 const path = require('path');
+const { getDataDir } = require('../lib/paths');
 
 // ── Constantes ────────────────────────────────────────────────────────────────
-const AUTH_DIR = path.join(__dirname, '../../baileys_auth');
+const AUTH_DIR = path.join(getDataDir(), 'baileys_auth');
 
 // Backoff de reconexão: 3 s, 6 s, 15 s, 30 s (permanece em 30 s)
 const RECONNECT_DELAYS = [3000, 6000, 15000, 30000];
