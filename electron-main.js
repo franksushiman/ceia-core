@@ -59,6 +59,40 @@ function createWindow() {
   mainWindow.on('closed', () => { mainWindow = null; });
 }
 
+// ─── Auto-updater ────────────────────────────────────────────────────────────
+// Só roda no app EMPACOTADO. No npm start (dev) é um no-op completo.
+function setupAutoUpdater() {
+  if (!app.isPackaged) return;
+
+  const { autoUpdater } = require('electron-updater');
+  const fs              = require('fs');
+
+  const logFile = path.join(app.getPath('userData'), 'ceia-updater.log');
+
+  function uLog(msg) {
+    const line = `[${new Date().toISOString()}] ${msg}\n`;
+    console.log('[updater]', msg);
+    try { fs.appendFileSync(logFile, line); } catch (_) {}
+  }
+
+  // Baixar silenciosamente; instalar ao fechar o app
+  autoUpdater.autoDownload        = true;
+  autoUpdater.autoInstallOnAppQuit = true;
+
+  autoUpdater.on('checking-for-update',  ()     => uLog('Verificando atualizações...'));
+  autoUpdater.on('update-available',     (info) => uLog(`Atualização disponível: v${info.version}`));
+  autoUpdater.on('update-not-available', ()     => uLog('App já está na versão mais recente.'));
+  autoUpdater.on('download-progress',    (p)    => uLog(`Baixando: ${Math.round(p.percent)}% (${Math.round((p.bytesPerSecond||0)/1024)} KB/s)`));
+  autoUpdater.on('update-downloaded',    (info) => uLog(`v${info.version} baixada. Será instalada no próximo restart.`));
+  autoUpdater.on('error',                (e)    => uLog(`Erro: ${e.message}`));
+
+  // Checar 5 s após boot — não atrapalha inicialização do servidor nem da janela
+  setTimeout(() => {
+    autoUpdater.checkForUpdates()
+      .catch(e => uLog(`Falha ao checar (offline?): ${e.message}`));
+  }, 5000);
+}
+
 app.whenReady().then(async () => {
   try {
     await startExpressServer();
@@ -66,7 +100,8 @@ app.whenReady().then(async () => {
     console.error('[electron] Express falhou:', e);
   }
   createWindow();
-  startBot(); // não bloqueia a janela
+  startBot();        // não bloqueia a janela
+  setupAutoUpdater(); // no-op em dev; silencioso em prod
 
   app.on('activate', () => {
     if (BrowserWindow.getAllWindows().length === 0) createWindow();

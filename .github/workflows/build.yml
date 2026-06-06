@@ -12,13 +12,10 @@ jobs:
         include:
           - os: ubuntu-latest
             platform: linux
-            artifact_pattern: "dist/*.AppImage\ndist/*.deb"
           - os: windows-latest
             platform: win
-            artifact_pattern: "dist/*.exe"
           - os: macos-latest
             platform: mac
-            artifact_pattern: "dist/*.dmg"
 
     runs-on: ${{ matrix.os }}
 
@@ -37,43 +34,40 @@ jobs:
 
       - name: Build Electron (${{ matrix.platform }})
         run: npm run build:${{ matrix.platform }}
-        env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Listar artefatos gerados
         shell: bash
         run: ls -lh dist/ || true
 
-      - name: Upload artefatos - Linux AppImage
+      - name: Upload artefatos - Linux
         if: matrix.os == 'ubuntu-latest'
         uses: actions/upload-artifact@v4
         with:
-          name: CeIA-OS-Linux-AppImage
-          path: dist/*.AppImage
-          if-no-files-found: warn
-
-      - name: Upload artefatos - Linux deb
-        if: matrix.os == 'ubuntu-latest'
-        uses: actions/upload-artifact@v4
-        with:
-          name: CeIA-OS-Linux-deb
-          path: dist/*.deb
+          name: CeIA-OS-Linux
+          path: |
+            dist/*.AppImage
+            dist/*.deb
+            dist/latest-linux.yml
           if-no-files-found: warn
 
       - name: Upload artefatos - Windows
         if: matrix.os == 'windows-latest'
         uses: actions/upload-artifact@v4
         with:
-          name: CeIA-OS-Windows-Setup
-          path: dist/*.exe
+          name: CeIA-OS-Windows
+          path: |
+            dist/*.exe
+            dist/latest.yml
           if-no-files-found: warn
 
       - name: Upload artefatos - macOS
         if: matrix.os == 'macos-latest'
         uses: actions/upload-artifact@v4
         with:
-          name: CeIA-OS-macOS-dmg
-          path: dist/*.dmg
+          name: CeIA-OS-macOS
+          path: |
+            dist/*.dmg
+            dist/latest-mac.yml
           if-no-files-found: warn
 
   release:
@@ -86,6 +80,10 @@ jobs:
       - name: Checkout do código
         uses: actions/checkout@v4
 
+      - name: Ler versão do package.json
+        id: ver
+        run: echo "VERSION=v$(node -p "require('./package.json').version")" >> $GITHUB_OUTPUT
+
       - name: Download de todos os artefatos
         uses: actions/download-artifact@v4
         with:
@@ -97,15 +95,15 @@ jobs:
       - name: Publicar GitHub Release
         uses: softprops/action-gh-release@v2
         with:
-          tag_name: v1.0.0
-          name: "CeIA OS v1.0.0"
+          tag_name: ${{ steps.ver.outputs.VERSION }}
+          name: "CeIA OS ${{ steps.ver.outputs.VERSION }}"
           draft: false
           prerelease: false
-          overwrite: true
           files: |
             artifacts/**/*.exe
             artifacts/**/*.AppImage
             artifacts/**/*.deb
             artifacts/**/*.dmg
+            artifacts/**/latest*.yml
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

@@ -9,10 +9,10 @@
     "start": "electron .",
     "server": "node server.js",
     "bot": "node index.js",
-    "build": "electron-builder --linux --win",
-    "build:linux": "electron-builder --linux",
-    "build:win": "electron-builder --win",
-    "build:mac": "electron-builder --mac",
+    "build": "electron-builder --linux --win --publish never",
+    "build:linux": "electron-builder --linux --publish never",
+    "build:win": "electron-builder --win --publish never",
+    "build:mac": "electron-builder --mac --publish never",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "build": {
@@ -20,6 +20,7 @@
     "productName": "CeIA OS",
     "copyright": "Copyright © 2026 CeIA",
     "asar": true,
+    "forceCodeSigning": false,
     "asarUnpack": [
       "node_modules/sqlite3/**",
       "node_modules/@mapbox/node-pre-gyp/**"
@@ -43,6 +44,14 @@
       "output": "dist",
       "buildResources": "build"
     },
+    "publish": [
+      {
+        "provider": "github",
+        "owner": "franksushiman",
+        "repo": "ceia-core",
+        "private": false
+      }
+    ],
     "linux": {
       "target": [
         { "target": "AppImage", "arch": ["x64"] },
@@ -62,7 +71,8 @@
       "target": [
         { "target": "dmg", "arch": ["x64", "arm64"] }
       ],
-      "category": "public.app-category.business"
+      "category": "public.app-category.business",
+      "notarize": false
     },
     "nsis": {
       "oneClick": false,
@@ -75,6 +85,7 @@
   "dependencies": {
     "@whiskeysockets/baileys": "^7.0.0-rc.9",
     "dotenv": "^17.4.2",
+    "electron-updater": "^6.8.9",
     "express": "^5.2.1",
     "multer": "^2.1.1",
     "openai": "^6.38.0",
