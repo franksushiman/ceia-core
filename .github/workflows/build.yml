@@ -1,0 +1,77 @@
+name: Build Electron App
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build:
+    strategy:
+      matrix:
+        include:
+          - os: ubuntu-latest
+            platform: linux
+            artifact_pattern: "dist/*.AppImage\ndist/*.deb"
+          - os: windows-latest
+            platform: win
+            artifact_pattern: "dist/*.exe"
+          - os: macos-latest
+            platform: mac
+            artifact_pattern: "dist/*.dmg"
+
+    runs-on: ${{ matrix.os }}
+
+    steps:
+      - name: Checkout do código
+        uses: actions/checkout@v4
+
+      - name: Configurar Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+          cache: 'npm'
+
+      - name: Instalar dependências
+        run: npm ci
+
+      - name: Build Electron (${{ matrix.platform }})
+        run: npm run build:${{ matrix.platform }}
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Listar artefatos gerados
+        shell: bash
+        run: ls -lh dist/ || true
+
+      - name: Upload artefatos - Linux AppImage
+        if: matrix.os == 'ubuntu-latest'
+        uses: actions/upload-artifact@v4
+        with:
+          name: CeIA-OS-Linux-AppImage
+          path: dist/*.AppImage
+          if-no-files-found: warn
+
+      - name: Upload artefatos - Linux deb
+        if: matrix.os == 'ubuntu-latest'
+        uses: actions/upload-artifact@v4
+        with:
+          name: CeIA-OS-Linux-deb
+          path: dist/*.deb
+          if-no-files-found: warn
+
+      - name: Upload artefatos - Windows
+        if: matrix.os == 'windows-latest'
+        uses: actions/upload-artifact@v4
+        with:
+          name: CeIA-OS-Windows-Setup
+          path: dist/*.exe
+          if-no-files-found: warn
+
+      - name: Upload artefatos - macOS
+        if: matrix.os == 'macos-latest'
+        uses: actions/upload-artifact@v4
+        with:
+          name: CeIA-OS-macOS-dmg
+          path: dist/*.dmg
+          if-no-files-found: warn
