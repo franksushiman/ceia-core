@@ -6,7 +6,34 @@ on:
       - main
 
 jobs:
+  # ─── Guarda: só constrói e publica se a versão do package.json ainda não tem tag ───
+  check:
+    runs-on: ubuntu-latest
+    outputs:
+      should_release: ${{ steps.check.outputs.should_release }}
+      version: ${{ steps.check.outputs.version }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0  # necessário para ver todas as tags
+
+      - name: Verificar se versão já foi publicada
+        id: check
+        run: |
+          VERSION="v$(node -p "require('./package.json').version")"
+          echo "version=$VERSION" >> $GITHUB_OUTPUT
+          if git ls-remote --tags origin | grep -q "refs/tags/${VERSION}$"; then
+            echo "⚠️  Tag ${VERSION} já existe. Bumpe a versão no package.json para publicar uma nova release."
+            echo "should_release=false" >> $GITHUB_OUTPUT
+          else
+            echo "✅ Versão ${VERSION} é nova. Prosseguindo com o build."
+            echo "should_release=true" >> $GITHUB_OUTPUT
+          fi
+
+  # ─── Build por plataforma ─────────────────────────────────────────────────────────
   build:
+    needs: check
+    if: needs.check.outputs.should_release == 'true'
     strategy:
       matrix:
         include:
@@ -70,8 +97,10 @@ jobs:
             dist/latest-mac.yml
           if-no-files-found: warn
 
+  # ─── Release ─────────────────────────────────────────────────────────────────────
   release:
-    needs: build
+    needs: [check, build]
+    if: needs.check.outputs.should_release == 'true'
     runs-on: ubuntu-latest
     permissions:
       contents: write
@@ -79,10 +108,6 @@ jobs:
     steps:
       - name: Checkout do código
         uses: actions/checkout@v4
-
-      - name: Ler versão do package.json
-        id: ver
-        run: echo "VERSION=v$(node -p "require('./package.json').version")" >> $GITHUB_OUTPUT
 
       - name: Download de todos os artefatos
         uses: actions/download-artifact@v4
@@ -95,8 +120,8 @@ jobs:
       - name: Publicar GitHub Release
         uses: softprops/action-gh-release@v2
         with:
-          tag_name: ${{ steps.ver.outputs.VERSION }}
-          name: "CeIA OS ${{ steps.ver.outputs.VERSION }}"
+          tag_name: ${{ needs.check.outputs.version }}
+          name: "CeIA OS ${{ needs.check.outputs.version }}"
           draft: false
           prerelease: false
           files: |
