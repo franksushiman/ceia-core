@@ -1,6 +1,6 @@
 {
   "name": "ceia_os",
-  "version": "1.0.4",
+  "version": "1.0.5",
   "description": "CeIA OS - Sistema de Gestão para Restaurantes",
   "main": "electron-main.js",
   "author": "CeIA",
@@ -59,7 +59,7 @@
         { "target": "AppImage", "arch": ["x64"] },
         { "target": "deb", "arch": ["x64"] }
       ],
-      "icon": "build/icon.png",
+      "icon": "build/icons",
       "category": "Office",
       "synopsis": "Sistema de gestão para restaurantes",
       "maintainer": "CeIA <contato@ceia.app>",
