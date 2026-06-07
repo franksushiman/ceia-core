@@ -1,6 +1,6 @@
 {
   "name": "ceia_os",
-  "version": "1.0.5",
+  "version": "1.0.6",
   "description": "CeIA OS - Sistema de Gestão para Restaurantes",
   "main": "electron-main.js",
   "author": "CeIA",
@@ -19,6 +19,7 @@
   "build": {
     "appId": "com.ceia.os",
     "productName": "CeIA OS",
+    "artifactName": "CeIA-OS-${version}.${ext}",
     "copyright": "Copyright © 2026 CeIA",
     "asar": true,
     "forceCodeSigning": false,

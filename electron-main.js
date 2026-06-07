@@ -86,6 +86,13 @@ function setupAutoUpdater() {
   autoUpdater.on('update-downloaded',    (info) => uLog(`v${info.version} baixada. Será instalada no próximo restart.`));
   autoUpdater.on('error',                (e)    => uLog(`Erro: ${e.message}`));
 
+  // Captura qualquer rejeição não tratada vinda do updater (ex: falha de download)
+  // sem derrubar o processo principal.
+  process.on('unhandledRejection', (reason) => {
+    const msg = reason instanceof Error ? reason.message : String(reason);
+    uLog(`UnhandledRejection (updater?): ${msg}`);
+  });
+
   // Checar 5 s após boot — não atrapalha inicialização do servidor nem da janela
   setTimeout(() => {
     autoUpdater.checkForUpdates()
